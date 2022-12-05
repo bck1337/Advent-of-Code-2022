@@ -1,42 +1,42 @@
 #include<string>
 #include<fstream>
+#include<algorithm>
+#include<vector>
 
 int main() {
 	std::ifstream file = std::ifstream("input.txt");
 	std::string line;
-	std::string first_string;
-	std::string last_string;
+	std::string intersection = "";
+	std::string badge = "";
+	std::vector<std::string> part_2 = {};
 	unsigned char prio_test;
 	int both = 0;
-	if (file.is_open()) {
-		std::getline(file,line);
-		while (!file.eof()) {
-			first_string = line.substr(0,line.length()/2);
-			last_string = line.substr(line.length() / 2, line.length() / 2);
-			for (int i = 0; i < first_string.length()-1; i++) {
-				prio_test = first_string.at(i);
-				if (last_string.find(prio_test) != -1) {
-					if (prio_test > 96) {
-						both += (prio_test - 96);
-					}
-					else {
-						both += (prio_test - 38);
-					}
+	int elf = 0;
+	if (!file.is_open()) {
+		return 1;
+	}
+	while (std::getline(file, line)) {
+		std::sort(line.begin(), line.end());
+		auto last = std::unique(line.begin(), line.end());
+		line.erase(last, line.end());
+		part_2.push_back(line);
+		elf++;
+		if (elf == 3) {
+			std::set_intersection(part_2[0].begin(), part_2[0].end(), part_2[1].begin(), part_2[1].end(), std::back_inserter(intersection));
+			std::set_intersection(intersection.begin(), intersection.end(), part_2[2].begin(), part_2[2].end(), std::back_inserter(badge));
+			for (int i = 0; i < badge.length(); i++) {
+				prio_test = badge.at(i);
+				if (prio_test > 96) {
+					both += (prio_test - 96);
 				}
-				if () {
-					if (first_string.find(prio_test, i + 1) != -1) {
-						if (prio_test > 96) {
-							both -= (prio_test - 96);
-						}
-						else {
-							both -= (prio_test - 38);
-						}
-					}
+				else {
+					both += (prio_test - 38);
 				}
 			}
-			std::getline(file, line);
+			intersection = "";
+			badge = "";
+			part_2.clear();
+			elf = 0;
 		}
-		return 0;
-	}
-	return 1;
+	}		return both;
 }
